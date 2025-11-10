@@ -1,0 +1,13 @@
+.root-pane { -fx-background-color: linear-gradient(to bottom, #0b2240, #0f335a); -fx-padding: 10; }
+.app-title { -fx-text-fill: white; -fx-font-size: 28px; -fx-padding: 12; -fx-alignment: center; }
+.welcome-text { -fx-text-fill: #e6f0ff; -fx-font-size: 16px; }
+.primary-btn {
+    -fx-background-color: linear-gradient(#3b82f6, #2563eb);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 18 10 18;
+    -fx-background-radius: 8;
+}
+.primary-btn:hover {
+    -fx-opacity: 0.9;
+}

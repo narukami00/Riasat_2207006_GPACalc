@@ -12,5 +12,6 @@ module com.project.gpa_calculator {
     requires com.almasb.fxgl.all;
 
     opens com.project.gpa_calculator to javafx.fxml;
+    opens com.project.gpa_calculator.controllers to javafx.fxml;
     exports com.project.gpa_calculator;
 }

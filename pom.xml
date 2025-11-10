@@ -133,8 +133,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.project.gpa_calculator/com.project.gpa_calculator.HelloApplication
-                            </mainClass>
+                            <mainClass>com.project.gpa_calculator.MainApp</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

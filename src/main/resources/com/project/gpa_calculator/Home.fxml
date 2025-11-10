@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="560" prefWidth="800" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HomeController">
+
+    <top>
+        <Label styleClass="app-title" text="GPA Calculator" BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <padding>
+                <Insets bottom="30" left="30" right="30" top="30" />
+            </padding>
+
+            <Label styleClass="welcome-text" text="Welcome to your interactive GPA Calculator" />
+            <Label styleClass="welcome-text" alignment="CENTER" maxWidth="600" text="Add your total target credits in the next screen and start adding courses." wrapText="true" />
+
+            <Button fx:id="startBtn" onAction="#onStart" prefWidth="220" styleClass="primary-btn" text="Start GPA Calculator" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <Label text="Designed by Rafsan" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

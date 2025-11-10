@@ -1,0 +1,57 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 1ECE-397E
+
+ Directory of C:\Program Files\Android\Android Studio\jbr\bin
+
+10/25/2024  04:45 AM            33,376 java.exe
+               1 File(s)         33,376 bytes
+
+ Directory of C:\Program Files\Common Files\Oracle\Java\javapath
+
+06/05/2024  06:04 AM           715,872 java.exe
+               1 File(s)        715,872 bytes
+
+ Directory of C:\Program Files\Common Files\Oracle\Java\javapath_target_62507312
+
+06/05/2024  06:04 AM           715,872 java.exe
+               1 File(s)        715,872 bytes
+
+ Directory of C:\Program Files\Java\jdk-17\bin
+
+07/04/2025  04:04 PM            54,384 java.exe
+               1 File(s)         54,384 bytes
+
+ Directory of C:\Program Files\JetBrains\IntelliJ IDEA 2025.2.4\jbr\bin
+
+10/23/2025  11:58 AM            33,632 java.exe
+               1 File(s)         33,632 bytes
+
+ Directory of C:\Program Files\JetBrains\PyCharm 2025.1.1.1\jbr\bin
+
+06/23/2025  01:22 PM            35,192 java.exe
+               1 File(s)         35,192 bytes
+
+ Directory of C:\Program Files (x86)\Arduino\java\bin
+
+02/11/2020  06:00 PM           192,376 java.exe
+               1 File(s)        192,376 bytes
+
+ Directory of C:\Program Files (x86)\Common Files\Oracle\Java\java8path
+
+06/05/2024  01:34 PM         1,323,104 java.exe
+               1 File(s)      1,323,104 bytes
+
+ Directory of C:\Program Files (x86)\Common Files\Oracle\Java\java8path_target_65308625
+
+06/05/2024  01:34 PM         1,323,104 java.exe
+               1 File(s)      1,323,104 bytes
+
+ Directory of C:\Program Files (x86)\Java\jre1.8.0_421\bin
+
+06/05/2024  01:22 PM           269,952 java.exe
+               1 File(s)        269,952 bytes
+
+ Directory of C:\Program Files (x86)\Java\latest\jre-1.8\bin
+
+06/05/2024  01:22 PM           269,952 java.exe
+               1 File(s)        269,952 bytes
