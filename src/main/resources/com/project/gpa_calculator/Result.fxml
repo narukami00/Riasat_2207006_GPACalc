@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.project.gpa_calculator.controllers.ResultController"
+            prefWidth="800" prefHeight="600" styleClass="root-pane">
+    <top>
+        <VBox alignment="CENTER">
+            <padding><Insets top="18" bottom="8" left="8" right="8"/></padding>
+            <Label text="GPA Result" styleClass="app-title"/>
+            <Label text="Award Form" style="-fx-font-size: 14px; -fx-text-fill: #e6f0ff;"/>
+        </VBox>
+    </top>
 
-</AnchorPane>
+    <center>
+        <VBox spacing="12">
+            <padding><Insets top="12" left="20" right="20" bottom="12"/></padding>
+
+            <TableView fx:id="tableResult" prefHeight="360">
+                <columns>
+                    <TableColumn text="Course" fx:id="rColName" prefWidth="220"/>
+                    <TableColumn text="Code" fx:id="rColCode" prefWidth="90"/>
+                    <TableColumn text="Credit" fx:id="rColCredit" prefWidth="80"/>
+                    <TableColumn text="Grade" fx:id="rColGrade" prefWidth="80"/>
+                    <TableColumn text="Points" fx:id="rColPoints" prefWidth="90"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="20" alignment="CENTER_RIGHT">
+                <Label text="Total Credits:" styleClass="welcome-text"/>
+                <Label fx:id="lblTotalCredits" styleClass="welcome-text"/>
+                <Label text="GPA:" styleClass="welcome-text" />
+                <Label fx:id="lblGPA" styleClass="welcome-text" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            </HBox>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
+            <Button text="Back" onAction="#onBack"/>
+        </HBox>
+    </bottom>
+</BorderPane>

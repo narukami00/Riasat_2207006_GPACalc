@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
@@ -27,24 +28,24 @@ public class HomeController {
             try{
                 double total = Double.parseDouble(totalCredits);
                 try{
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CourseEntry.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/CourseEntry.fxml"));
                     Parent root = fxmlLoader.load();
-                    CourseController controller = fxmlLoader.<CourseController>getController();
+                    CourseEntryController controller = fxmlLoader.getController();
                     controller.setTotalCredits(total);
 
                     Stage stage = (Stage)  startBtn.getScene().getWindow();
                     Scene scene = new Scene(root,900,600);
-                    scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+                    scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
                     stage.setScene(scene);
                 }catch(Exception ex){
                     ex.printStackTrace();
-                    javafx.scene.control.Alert a = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                    a.setHeaderText("Course Entry not ready yet");
-                    a.setContentText("CourseEntry.fxml/controller will be implemented in next step.\nTotal credits: " + total);
+                    Alert a = new Alert(Alert.AlertType.INFORMATION);
+                    a.setHeaderText("Course Entry");
+                    a.setContentText("Total credits: " + total);
                     a.showAndWait();
                 }
             }catch(NumberFormatException e){
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("Invalid number");
                 alert.setContentText("Please enter a valid numeric credit value.");
                 alert.showAndWait();

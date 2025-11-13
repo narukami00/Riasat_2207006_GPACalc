@@ -1,6 +1,7 @@
 package com.project.gpa_calculator.model;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Grade{
     private static final Map<String,Double> gradePointMap = new HashMap<>();
@@ -21,7 +22,7 @@ public class Grade{
         return gradePointMap.getOrDefault(grade, 0.0);
     }
 
-    public static Map<String, Double> getGradeMap(){
-        return gradePointMap;
+    public static Set<String> gradeKeys() {
+        return gradePointMap.keySet();
     }
 }

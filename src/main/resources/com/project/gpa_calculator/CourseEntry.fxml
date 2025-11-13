@@ -1,14 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.project.gpa_calculator.controllers.CourseEntryController"
+            prefWidth="900" prefHeight="600" styleClass="root-pane">
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.project.gpa_calculator.controllers.CourseController"
-            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <padding><Insets top="12" left="12" right="12" bottom="12"/></padding>
+            <Label text="GPA Calculator — Course Entry" styleClass="app-title"/>
+        </HBox>
+    </top>
 
-</AnchorPane>
+    <center>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="12" right="12" bottom="12" left="12"/>
+            </padding>
+
+            <GridPane hgap="10" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="18"/>
+                    <ColumnConstraints percentWidth="32"/>
+                    <ColumnConstraints percentWidth="18"/>
+                    <ColumnConstraints percentWidth="32"/>
+                </columnConstraints>
+
+                <Label text="Course Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="welcome-text"/>
+                <TextField fx:id="tfCourseName" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Course Code:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="welcome-text"/>
+                <TextField fx:id="tfCourseCode" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="Credit:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="welcome-text"/>
+                <TextField fx:id="tfCredit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Teacher 1:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="welcome-text"/>
+                <TextField fx:id="tfTeacher1" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <Label text="Teacher 2:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="welcome-text"/>
+                <TextField fx:id="tfTeacher2" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Grade:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="welcome-text"/>
+                <ComboBox fx:id="cbGrade" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+                <Button text="Add Course" fx:id="btnAdd" onAction="#onAddCourse"
+                        GridPane.rowIndex="3" GridPane.columnIndex="3" styleClass="primary-btn"/>
+            </GridPane>
+
+            <Separator/>
+
+            <TableView fx:id="tableCourses" prefHeight="300">
+                <columns>
+                    <TableColumn text="Name" fx:id="colName" prefWidth="180"/>
+                    <TableColumn text="Code" fx:id="colCode" prefWidth="100"/>
+                    <TableColumn text="Credit" fx:id="colCredit" prefWidth="80"/>
+                    <TableColumn text="Teacher 1" fx:id="colT1" prefWidth="130"/>
+                    <TableColumn text="Teacher 2" fx:id="colT2" prefWidth="130"/>
+                    <TableColumn text="Grade" fx:id="colGrade" prefWidth="80"/>
+                    <TableColumn text="Action" fx:id="colAction" prefWidth="90"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Label text="Total Credits Entered:"/>
+                <Label fx:id="lblCreditsEntered" text="0.0"/>
+                <Label text=" / "/>
+                <Label fx:id="lblTotalCredits" text="0.0"/>
+                <Button text="Reset" onAction="#onReset"/>
+                <Button text="Calculate GPA" fx:id="btnCalculate" onAction="#onCalculate"
+                        disable="true" styleClass="primary-btn"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>
