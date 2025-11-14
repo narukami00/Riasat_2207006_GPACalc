@@ -59,15 +59,17 @@ public class CourseEntryController {
         colGrade.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGrade()));
 
         tableCourses.setItems(courses);
+        tableCourses.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         addDeleteButtonToTable();
     }
 
     private void addDeleteButtonToTable() {
         colAction.setCellFactory(param -> new TableCell<>() {
-            private final Button deleteBtn = new Button("Delete");
+            private final Button deleteBtn = new Button("🗑 Delete");
 
             {
+                deleteBtn.getStyleClass().add("delete-btn");
                 deleteBtn.setOnAction(event -> {
                     Course course = getTableView().getItems().get(getIndex());
                     deleteCourse(course);
@@ -129,16 +131,34 @@ public class CourseEntryController {
             return;
         }
 
+        //Allow exceeding total credits
+//        if (currentCredits + credit > totalCredits) {
+//            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+//            confirm.setTitle("Confirm Credit Exceed");
+//            confirm.setHeaderText("Adding this course will exceed the total defined credits.");
+//            confirm.setContentText("Total: " + totalCredits + " | Current: " + currentCredits + " | This course: " + credit + "\nProceed?");
+//            Optional<ButtonType> res = confirm.showAndWait();
+//            if (res.isEmpty() || res.get() != ButtonType.OK) {
+//                return;
+//            }
+//        }
+
+        // STRICT: Do NOT allow exceeding total credits
         if (currentCredits + credit > totalCredits) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirm Credit Exceed");
-            confirm.setHeaderText("Adding this course will exceed the total defined credits.");
-            confirm.setContentText("Total: " + totalCredits + " | Current: " + currentCredits + " | This course: " + credit + "\nProceed?");
-            Optional<ButtonType> res = confirm.showAndWait();
-            if (res.isEmpty() || res.get() != ButtonType.OK) {
-                return;
-            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Credit Limit Exceeded");
+            alert.setHeaderText("Cannot Add Course");
+            alert.setContentText(
+                    "Adding this course exceeds the total credit limit.\n\n" +
+                            "Total Allowed Credits: " + totalCredits + "\n" +
+                            "Currently Added: " + currentCredits + "\n" +
+                            "This Course Credit: " + credit + "\n\n" +
+                            "Please modify or delete some previous courses."
+            );
+            alert.showAndWait();
+            return;
         }
+
 
         Course c = new Course(name, code, credit, t1, t2, grade);
         courses.add(c);
@@ -189,7 +209,7 @@ public class CourseEntryController {
             rc.setData(courses, gpa, totalCredits);
 
             Stage stage = (Stage) btnCalculate.getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 1000, 750);
             URL css = getClass().getResource("/com/project/gpa_calculator/css/styles.css");
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
 

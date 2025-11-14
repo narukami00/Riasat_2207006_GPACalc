@@ -11,9 +11,11 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Home.fxml"));
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root,800,560);
+        Scene scene = new Scene(root, 1000, 750);
         scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
         stage.setTitle("GPA Calculator");
+        stage.setMinWidth(900);
+        stage.setMinHeight(700);
         stage.setScene(scene);
         stage.show();
     }

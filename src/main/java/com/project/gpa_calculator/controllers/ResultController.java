@@ -32,6 +32,8 @@ public class ResultController {
         rColCredit.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getCredit()));
         rColGrade.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGrade()));
         rColPoints.setCellValueFactory(c -> new SimpleObjectProperty<>(Grade.toPoint(c.getValue().getGrade())));
+        
+        tableResult.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public void setData(List<Course> courseList, double gpa, double totalCredits) {

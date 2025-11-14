@@ -5,43 +5,52 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.project.gpa_calculator.controllers.ResultController"
-            prefWidth="800" prefHeight="600" styleClass="root-pane">
+            prefWidth="1000" prefHeight="750" styleClass="root-pane">
     <top>
-        <VBox alignment="CENTER">
-            <padding><Insets top="18" bottom="8" left="8" right="8"/></padding>
-            <Label text="GPA Result" styleClass="app-title"/>
-            <Label text="Award Form" style="-fx-font-size: 14px; -fx-text-fill: #e6f0ff;"/>
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets top="30" bottom="25"/></padding>
+            <Label text="🏆 GPA Result" styleClass="app-title"/>
+            <Label text="Congratulations on completing your courses!" styleClass="welcome-text" style="-fx-font-size: 15px; -fx-font-style: italic;"/>
         </VBox>
     </top>
 
     <center>
-        <VBox spacing="12">
-            <padding><Insets top="12" left="20" right="20" bottom="12"/></padding>
+        <VBox spacing="25">
+            <padding><Insets top="20" left="40" right="40" bottom="20"/></padding>
 
-            <TableView fx:id="tableResult" prefHeight="360">
-                <columns>
-                    <TableColumn text="Course" fx:id="rColName" prefWidth="220"/>
-                    <TableColumn text="Code" fx:id="rColCode" prefWidth="90"/>
-                    <TableColumn text="Credit" fx:id="rColCredit" prefWidth="80"/>
-                    <TableColumn text="Grade" fx:id="rColGrade" prefWidth="80"/>
-                    <TableColumn text="Points" fx:id="rColPoints" prefWidth="90"/>
-                </columns>
-            </TableView>
-
-            <HBox spacing="20" alignment="CENTER_RIGHT">
-                <Label text="Total Credits:" styleClass="welcome-text"/>
-                <Label fx:id="lblTotalCredits" styleClass="welcome-text"/>
-                <Label text="GPA:" styleClass="welcome-text" />
-                <Label fx:id="lblGPA" styleClass="welcome-text" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <HBox spacing="30" alignment="CENTER">
+                <VBox alignment="CENTER" spacing="10" styleClass="card" prefWidth="350" prefHeight="120">
+                    <Label text="Total Credits" style="-fx-text-fill: #667eea; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalCredits" styleClass="highlight-label" style="-fx-text-fill: #667eea; -fx-font-size: 32px;"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="10" styleClass="card" prefWidth="350" prefHeight="120">
+                    <Label text="Your GPA" style="-fx-text-fill: #ff6b6b; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblGPA" styleClass="highlight-label" style="-fx-text-fill: #ff6b6b; -fx-font-size: 38px; -fx-font-weight: bold;"/>
+                </VBox>
             </HBox>
+
+            <VBox spacing="12" VBox.vgrow="ALWAYS">
+                <Label text="Course Details" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                
+                <TableView fx:id="tableResult" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn text="Course Name" fx:id="rColName" minWidth="180"/>
+                        <TableColumn text="Code" fx:id="rColCode" minWidth="80" maxWidth="120"/>
+                        <TableColumn text="Credit" fx:id="rColCredit" minWidth="80" maxWidth="120"/>
+                        <TableColumn text="Grade" fx:id="rColGrade" minWidth="80" maxWidth="120"/>
+                        <TableColumn text="Grade Points" fx:id="rColPoints" minWidth="100" maxWidth="140"/>
+                    </columns>
+                </TableView>
+            </VBox>
 
         </VBox>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="10">
-            <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
-            <Button text="Back" onAction="#onBack"/>
+        <HBox alignment="CENTER" spacing="10">
+            <padding><Insets top="15" bottom="25"/></padding>
+            <Button text="🏠 Back to Home" onAction="#onBack" prefWidth="180" prefHeight="45" styleClass="primary-btn" style="-fx-font-size: 14px;"/>
         </HBox>
     </bottom>
 </BorderPane>

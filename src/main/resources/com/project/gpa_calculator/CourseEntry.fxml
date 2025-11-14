@@ -4,73 +4,85 @@
 <?import javafx.geometry.Insets?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.project.gpa_calculator.controllers.CourseEntryController"
-            prefWidth="900" prefHeight="600" styleClass="root-pane">
+            prefWidth="1000" prefHeight="750" styleClass="root-pane">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <padding><Insets top="12" left="12" right="12" bottom="12"/></padding>
-            <Label text="GPA Calculator — Course Entry" styleClass="app-title"/>
-        </HBox>
+        <VBox alignment="CENTER" spacing="8">
+            <padding><Insets top="25" bottom="20"/></padding>
+            <Label text="📚 Course Entry" styleClass="app-title"/>
+            <Label text="Add your courses and grades" styleClass="welcome-text" style="-fx-font-size: 14px; -fx-font-style: italic;"/>
+        </VBox>
     </top>
 
     <center>
-        <VBox spacing="12">
+        <VBox spacing="20">
             <padding>
-                <Insets top="12" right="12" bottom="12" left="12"/>
+                <Insets top="20" right="30" bottom="20" left="30"/>
             </padding>
 
-            <GridPane hgap="10" vgap="8">
-                <columnConstraints>
-                    <ColumnConstraints percentWidth="18"/>
-                    <ColumnConstraints percentWidth="32"/>
-                    <ColumnConstraints percentWidth="18"/>
-                    <ColumnConstraints percentWidth="32"/>
-                </columnConstraints>
+            <VBox spacing="18" styleClass="card">
+                <Label text="Add New Course" style="-fx-text-fill: #667eea; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="18"/>
+                        <ColumnConstraints percentWidth="32"/>
+                        <ColumnConstraints percentWidth="18"/>
+                        <ColumnConstraints percentWidth="32"/>
+                    </columnConstraints>
 
-                <Label text="Course Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="welcome-text"/>
-                <TextField fx:id="tfCourseName" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Course Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: #555;"/>
+                    <TextField fx:id="tfCourseName" promptText="e.g., Data Structures" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                <Label text="Course Code:" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="welcome-text"/>
-                <TextField fx:id="tfCourseCode" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                    <Label text="Course Code:" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-text-fill: #555;"/>
+                    <TextField fx:id="tfCourseCode" promptText="e.g., CSE2202" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-                <Label text="Credit:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="welcome-text"/>
-                <TextField fx:id="tfCredit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Teacher 1:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: #555;"/>
+                    <TextField fx:id="tfTeacher1" promptText="Primary instructor" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                <Label text="Teacher 1:" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="welcome-text"/>
-                <TextField fx:id="tfTeacher1" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                    <Label text="Teacher 2:" GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-text-fill: #555;"/>
+                    <TextField fx:id="tfTeacher2" promptText="Secondary instructor" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-                <Label text="Teacher 2:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="welcome-text"/>
-                <TextField fx:id="tfTeacher2" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Credit:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: #555;"/>
+                    <TextField fx:id="tfCredit" promptText="e.g., 3.0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                <Label text="Grade:" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="welcome-text"/>
-                <ComboBox fx:id="cbGrade" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+                    <Label text="Grade:" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-text-fill: #555;"/>
+                    <ComboBox fx:id="cbGrade" promptText="Select grade" prefWidth="200" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+                </GridPane>
+            </VBox>
+            
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button text="➕ Add Course" fx:id="btnAdd" onAction="#onAddCourse" styleClass="primary-btn" prefWidth="160"/>
+            </HBox>
 
-                <Button text="Add Course" fx:id="btnAdd" onAction="#onAddCourse"
-                        GridPane.rowIndex="3" GridPane.columnIndex="3" styleClass="primary-btn"/>
-            </GridPane>
+            <VBox spacing="15" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label text="Your Courses" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Credits: " styleClass="info-label"/>
+                    <Label fx:id="lblCreditsEntered" text="0.0" styleClass="highlight-label"/>
+                    <Label text="/" styleClass="welcome-text" style="-fx-font-size: 18px;"/>
+                    <Label fx:id="lblTotalCredits" text="0.0" styleClass="highlight-label"/>
+                </HBox>
+                
+                <TableView fx:id="tableCourses" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn text="Course Name" fx:id="colName" minWidth="150"/>
+                        <TableColumn text="Code" fx:id="colCode" minWidth="80" maxWidth="120"/>
+                        <TableColumn text="Credit" fx:id="colCredit" minWidth="60" maxWidth="100"/>
+                        <TableColumn text="Teacher 1" fx:id="colT1" minWidth="120"/>
+                        <TableColumn text="Teacher 2" fx:id="colT2" minWidth="120"/>
+                        <TableColumn text="Grade" fx:id="colGrade" minWidth="60" maxWidth="100"/>
+                        <TableColumn text="Action" fx:id="colAction" minWidth="100" maxWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
 
-            <Separator/>
-
-            <TableView fx:id="tableCourses" prefHeight="300">
-                <columns>
-                    <TableColumn text="Name" fx:id="colName" prefWidth="180"/>
-                    <TableColumn text="Code" fx:id="colCode" prefWidth="100"/>
-                    <TableColumn text="Credit" fx:id="colCredit" prefWidth="80"/>
-                    <TableColumn text="Teacher 1" fx:id="colT1" prefWidth="130"/>
-                    <TableColumn text="Teacher 2" fx:id="colT2" prefWidth="130"/>
-                    <TableColumn text="Grade" fx:id="colGrade" prefWidth="80"/>
-                    <TableColumn text="Action" fx:id="colAction" prefWidth="90"/>
-                </columns>
-            </TableView>
-
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Label text="Total Credits Entered:"/>
-                <Label fx:id="lblCreditsEntered" text="0.0"/>
-                <Label text=" / "/>
-                <Label fx:id="lblTotalCredits" text="0.0"/>
-                <Button text="Reset" onAction="#onReset"/>
-                <Button text="Calculate GPA" fx:id="btnCalculate" onAction="#onCalculate"
-                        disable="true" styleClass="primary-btn"/>
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="🔄 Reset All" onAction="#onReset" prefWidth="140" style="-fx-font-size: 13px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="📊 Calculate GPA" fx:id="btnCalculate" onAction="#onCalculate"
+                        disable="true" styleClass="primary-btn" prefWidth="180" prefHeight="45" style="-fx-font-size: 15px;"/>
             </HBox>
         </VBox>
     </center>

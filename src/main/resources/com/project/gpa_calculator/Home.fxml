@@ -4,32 +4,42 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="560" prefWidth="800" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HomeController">
+<BorderPane prefHeight="750" prefWidth="1000" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HomeController">
 
     <top>
-        <Label styleClass="app-title" text="GPA Calculator" BorderPane.alignment="CENTER" />
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="40" bottom="20" />
+            </padding>
+            <Label styleClass="app-title" text="🎓 GPA Calculator" />
+        </VBox>
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="20">
+        <VBox alignment="CENTER" spacing="35">
             <padding>
-                <Insets bottom="30" left="30" right="30" top="30" />
+                <Insets bottom="50" left="50" right="50" top="30" />
             </padding>
 
-            <Label styleClass="welcome-text" text="Welcome to your interactive GPA Calculator" />
-            <Label styleClass="welcome-text" alignment="CENTER" maxWidth="600" text="Add your total target credits in the next screen and start adding courses." wrapText="true" />
+            <VBox alignment="CENTER" spacing="15" maxWidth="550">
+                <Label styleClass="welcome-text" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Welcome!" />
+            </VBox>
 
-            <Button fx:id="startBtn" onAction="#onStart" prefWidth="220" styleClass="primary-btn" text="Start GPA Calculator" />
+
+
+            <Button fx:id="startBtn" onAction="#onStart" prefWidth="240" prefHeight="50" 
+                    styleClass="primary-btn" text="Start GPA Calculator" style="-fx-font-size: 16px;" />
         </VBox>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="10">
+        <VBox alignment="CENTER" spacing="8">
             <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
+                <Insets bottom="20" />
             </padding>
-            <Label text="Designed by Rafsan" styleClass="welcome-text"/>
-        </HBox>
+            <Separator prefWidth="200" style="-fx-background-color: rgba(255,255,255,0.3);" />
+            <Label text="Designed by Rafsan" styleClass="welcome-text" style="-fx-font-size: 13px; -fx-font-style: italic;" />
+        </VBox>
     </bottom>
 
 </BorderPane>
