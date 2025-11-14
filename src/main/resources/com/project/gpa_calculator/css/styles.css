@@ -5,7 +5,7 @@
 
 .app-title { 
     -fx-text-fill: white;
-    -fx-font-size: 36px;
+    -fx-font-size: 56px;
     -fx-font-weight: bold;
     -fx-padding: 20;
     -fx-alignment: center;
@@ -99,6 +99,27 @@
     -fx-border-width: 2;
 }
 
+.edit-btn {
+    -fx-background-color: #6a7ed6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 6 14 6 14;
+    -fx-background-radius: 15;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #6a7ed6;
+}
+
+.edit-btn:focused {
+    -fx-background-color: #6a7ed6;
+    -fx-border-color: #667de9;
+    -fx-border-width: 2;
+}
+
 .text-field, .combo-box {
     -fx-background-color: rgba(255, 255, 255, 0.9);
     -fx-background-radius: 8;
@@ -121,7 +142,7 @@
 }
 
 .combo-box-popup .list-view .list-cell:hover {
-    -fx-background-color: #f0f4ff;
+    -fx-background-color: #667de9;
 }
 
 .label {

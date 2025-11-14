@@ -73,7 +73,7 @@
                         <TableColumn text="Teacher 1" fx:id="colT1" minWidth="120"/>
                         <TableColumn text="Teacher 2" fx:id="colT2" minWidth="120"/>
                         <TableColumn text="Grade" fx:id="colGrade" minWidth="60" maxWidth="100"/>
-                        <TableColumn text="Action" fx:id="colAction" minWidth="100" maxWidth="120"/>
+                        <TableColumn text="Action" fx:id="colAction" minWidth="140" maxWidth="180"/>
                     </columns>
                 </TableView>
             </VBox>

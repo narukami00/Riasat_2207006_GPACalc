@@ -61,14 +61,21 @@ public class CourseEntryController {
         tableCourses.setItems(courses);
         tableCourses.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        addDeleteButtonToTable();
+        addButtonToTable();
     }
 
-    private void addDeleteButtonToTable() {
+    private void addButtonToTable() {
         colAction.setCellFactory(param -> new TableCell<>() {
-            private final Button deleteBtn = new Button("🗑 Delete");
+            private final Button editBtn = new Button(" Edit ");
+            private final Button deleteBtn = new Button("Delete");
 
             {
+                editBtn.getStyleClass().add("edit-btn");
+                editBtn.setOnAction(event -> {
+                    Course course = getTableView().getItems().get(getIndex());
+                    editCourse(course);
+                });
+                
                 deleteBtn.getStyleClass().add("delete-btn");
                 deleteBtn.setOnAction(event -> {
                     Course course = getTableView().getItems().get(getIndex());
@@ -82,12 +89,26 @@ public class CourseEntryController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    HBox box = new HBox(deleteBtn);
-                    box.setSpacing(5);
+                    HBox box = new HBox(5, editBtn, deleteBtn);
                     setGraphic(box);
                 }
             }
         });
+    }
+    
+    private void editCourse(Course course) {
+        if (course == null) return;
+        
+        tfCourseName.setText(course.getCourseName());
+        tfCourseCode.setText(course.getCourseCode());
+        tfCredit.setText(String.valueOf(course.getCredit()));
+        tfTeacher1.setText(course.getTeacher1());
+        tfTeacher2.setText(course.getTeacher2());
+        cbGrade.setValue(course.getGrade());
+        
+        courses.remove(course);
+        currentCredits -= course.getCredit();
+        updateCreditLabels();
     }
 
     private void deleteCourse(Course course) {

@@ -25,8 +25,8 @@
                 </VBox>
                 
                 <VBox alignment="CENTER" spacing="10" styleClass="card" prefWidth="350" prefHeight="120">
-                    <Label text="Your GPA" style="-fx-text-fill: #ff6b6b; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    <Label fx:id="lblGPA" styleClass="highlight-label" style="-fx-text-fill: #ff6b6b; -fx-font-size: 38px; -fx-font-weight: bold;"/>
+                    <Label text="Your GPA" style="-fx-text-fill: #d549e6; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblGPA" styleClass="highlight-label" style="-fx-text-fill: #d549e6; -fx-font-size: 38px; -fx-font-weight: bold;"/>
                 </VBox>
             </HBox>
 
@@ -48,8 +48,9 @@
     </center>
 
     <bottom>
-        <HBox alignment="CENTER" spacing="10">
+        <HBox alignment="CENTER" spacing="15">
             <padding><Insets top="15" bottom="25"/></padding>
+            <Button text="💾 Export Results" onAction="#onExport" prefWidth="180" prefHeight="45" styleClass="primary-btn" style="-fx-font-size: 14px;"/>
             <Button text="🏠 Back to Home" onAction="#onBack" prefWidth="180" prefHeight="45" styleClass="primary-btn" style="-fx-font-size: 14px;"/>
         </HBox>
     </bottom>

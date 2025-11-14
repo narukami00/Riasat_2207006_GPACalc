@@ -25,8 +25,6 @@
                 <Label styleClass="welcome-text" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Welcome!" />
             </VBox>
 
-
-
             <Button fx:id="startBtn" onAction="#onStart" prefWidth="240" prefHeight="50" 
                     styleClass="primary-btn" text="Start GPA Calculator" style="-fx-font-size: 16px;" />
         </VBox>
