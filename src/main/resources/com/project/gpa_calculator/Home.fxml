@@ -16,17 +16,19 @@
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="35">
+        <VBox alignment="CENTER" spacing="50">
             <padding>
-                <Insets bottom="50" left="50" right="50" top="30" />
+                <Insets bottom="80" left="50" right="50" top="50" />
             </padding>
 
-            <VBox alignment="CENTER" spacing="15" maxWidth="550">
-                <Label styleClass="welcome-text" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Welcome!" />
+            <VBox alignment="CENTER" spacing="25">
+                <Label style="-fx-font-size: 80px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 3);" text="📊" />
+                <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);" text="Calculate Your GPA" />
+                <Label style="-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-style: italic;" text="Quick • Easy • Accurate" />
             </VBox>
 
-            <Button fx:id="startBtn" onAction="#onStart" prefWidth="240" prefHeight="50" 
-                    styleClass="primary-btn" text="Start GPA Calculator" style="-fx-font-size: 16px;" />
+            <Button fx:id="startBtn" onAction="#onStart" prefWidth="260" prefHeight="55" 
+                    styleClass="primary-btn" text="Get Started ➜" style="-fx-font-size: 18px;" />
         </VBox>
     </center>
 

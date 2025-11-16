@@ -10,7 +10,9 @@ module com.project.gpa_calculator {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
-    requires org.apache.poi.ooxml;
+    requires kernel;
+    requires layout;
+    requires io;
 
     opens com.project.gpa_calculator to javafx.fxml;
     opens com.project.gpa_calculator.controllers to javafx.fxml;
