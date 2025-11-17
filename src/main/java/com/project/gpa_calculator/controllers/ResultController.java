@@ -1,5 +1,8 @@
 package com.project.gpa_calculator.controllers;
 
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.element.Div;
@@ -57,7 +60,7 @@ public class ResultController {
         ObservableList<Course> items = FXCollections.observableArrayList(courseList);
         tableResult.setItems(items);
 
-        lblTotalCredits.setText(String.format("%.1f", totalCredits));
+        lblTotalCredits.setText(String.format("%.2f", totalCredits));
         lblGPA.setText(String.format("%.2f", gpa));
     }
 
@@ -96,11 +99,29 @@ public class ResultController {
         PdfDocument pdf = new PdfDocument(writer);
         com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf);
 
+        PdfFont poppins = PdfFontFactory.createFont(
+                getClass().getResourceAsStream("/com/project/gpa_calculator/fonts/Poppins-Regular.ttf").readAllBytes(),
+                PdfEncodings.IDENTITY_H,
+                PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED
+        );
+
+        PdfFont poppinsBold = PdfFontFactory.createFont(
+                getClass().getResourceAsStream("/com/project/gpa_calculator/fonts/Poppins-Bold.ttf").readAllBytes(),
+                PdfEncodings.IDENTITY_H,
+                PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED
+        );
+
+        PdfFont poppinsSemiBold = PdfFontFactory.createFont(
+                getClass().getResourceAsStream("/com/project/gpa_calculator/fonts/Poppins-SemiBold.ttf").readAllBytes(),
+                PdfEncodings.IDENTITY_H,
+                PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED
+        );
+
         document.setMargins(50, 50, 50, 50);
 
         Paragraph title = new Paragraph("ACADEMIC ACHIEVEMENT CERTIFICATE")
+            .setFont(poppinsBold)
             .setFontSize(20)
-            .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.BLUE)
             .setBorder(new com.itextpdf.layout.borders.SolidBorder(com.itextpdf.kernel.colors.ColorConstants.BLUE, 2))
@@ -108,6 +129,7 @@ public class ResultController {
         document.add(title);
         
         Paragraph subtitle = new Paragraph("Grade Point Average Report")
+            .setFont(poppinsSemiBold)
             .setFontSize(14)
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(new com.itextpdf.kernel.colors.DeviceRgb(102, 126, 234))
@@ -115,9 +137,9 @@ public class ResultController {
         document.add(subtitle);
 
         Paragraph date = new Paragraph(
-            "Generated: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy • hh:mm a")))
+            "Published: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy • hh:mm a")))
+            .setFont(poppins)
             .setFontSize(10)
-            .setItalic()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY)
             .setMarginBottom(20);
@@ -130,21 +152,22 @@ public class ResultController {
             .setBackgroundColor(new com.itextpdf.kernel.colors.DeviceRgb(245, 247, 255));
         
         Paragraph gpaLabel = new Paragraph("CUMULATIVE GPA")
+            .setFont(poppinsSemiBold)
             .setFontSize(12)
-            .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(new com.itextpdf.kernel.colors.DeviceRgb(102, 126, 234))
             .setMarginBottom(5);
         gpaBox.add(gpaLabel);
         
         Paragraph gpaValue = new Paragraph(String.format("%.2f", currentGPA))
+            .setFont(poppinsBold)
             .setFontSize(42)
-            .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.BLUE);
         gpaBox.add(gpaValue);
         
         Paragraph gpaOut = new Paragraph("out of 4.00")
+            .setFont(poppins)
             .setFontSize(10)
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
@@ -152,18 +175,18 @@ public class ResultController {
         gpaBox.add(gpaOut);
         
         Paragraph credits = new Paragraph(
-            "Total Credits: " + String.format("%.1f", currentTotalCredits) + " hours")
+            "Total Credits: " + String.format("%.2f", currentTotalCredits) + " hours")
+            .setFont(poppinsSemiBold)
             .setFontSize(12)
-            .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(new com.itextpdf.kernel.colors.DeviceRgb(118, 75, 162));
         gpaBox.add(credits);
         
         document.add(gpaBox);
 
-        Paragraph tableTitle = new Paragraph("📚  DETAILED COURSE BREAKDOWN")
+        Paragraph tableTitle = new Paragraph("COURSE BREAKDOWN")
+            .setFont(poppinsSemiBold)
             .setFontSize(14)
-            .setBold()
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.BLUE)
             .setMarginBottom(10);
         document.add(tableTitle);
@@ -176,8 +199,8 @@ public class ResultController {
         for (String header : headers) {
             table.addHeaderCell(new Cell()
                 .add(new Paragraph(header)
+                    .setFont(poppinsSemiBold)
                     .setFontSize(11)
-                    .setBold()
                     .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE))
                 .setBackgroundColor(headerBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
@@ -191,30 +214,30 @@ public class ResultController {
                 com.itextpdf.kernel.colors.ColorConstants.WHITE;
             
             table.addCell(new Cell()
-                .add(new Paragraph(course.getCourseName()).setFontSize(10))
+                .add(new Paragraph(course.getCourseName()).setFont(poppins).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setPadding(6));
             
             table.addCell(new Cell()
-                .add(new Paragraph(course.getCourseCode()).setFontSize(10))
-                .setBackgroundColor(rowBg)
-                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
-                .setPadding(6));
-            
-            table.addCell(new Cell()
-                .add(new Paragraph(String.format("%.1f", course.getCredit())).setFontSize(10))
+                .add(new Paragraph(course.getCourseCode()).setFont(poppins).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
             
             table.addCell(new Cell()
-                .add(new Paragraph(course.getGrade()).setFontSize(10))
+                .add(new Paragraph(String.format("%.2f", course.getCredit())).setFont(poppins).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
             
             table.addCell(new Cell()
-                .add(new Paragraph(String.format("%.2f", Grade.toPoint(course.getGrade()))).setFontSize(10))
+                .add(new Paragraph(course.getGrade()).setFont(poppinsSemiBold).setFontSize(10))
+                .setBackgroundColor(rowBg)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setPadding(6));
+            
+            table.addCell(new Cell()
+                .add(new Paragraph(String.format("%.2f", Grade.toPoint(course.getGrade()))).setFont(poppins).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
@@ -224,18 +247,18 @@ public class ResultController {
         
         document.add(table);
 
-        Paragraph footer = new Paragraph("\n✓  Keep up the excellent work!")
+        Paragraph footer = new Paragraph("\nKeep up the excellent work!")
+            .setFont(poppinsSemiBold)
             .setFontSize(11)
-            .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(new com.itextpdf.kernel.colors.DeviceRgb(102, 126, 234))
             .setMarginTop(20);
         document.add(footer);
-        
+
         Paragraph footerInfo = new Paragraph(
-            "This document was automatically generated by GPA Calculator")
+            "This document was generated by GPA Calculator")
+            .setFont(poppins)
             .setFontSize(9)
-            .setItalic()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY);
         document.add(footerInfo);

@@ -132,8 +132,8 @@ public class CourseEntryController {
     }
 
     private void updateCreditLabels() {
-        lblCreditsEntered.setText(String.format("%.1f", currentCredits));
-        lblTotalCredits.setText(String.format("%.1f", totalCredits));
+        lblCreditsEntered.setText(String.format("%.2f", currentCredits));
+        lblTotalCredits.setText(String.format("%.2f", totalCredits));
         btnCalculate.setDisable(currentCredits < totalCredits);
     }
 
