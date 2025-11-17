@@ -22,7 +22,7 @@
 
             <VBox spacing="18" styleClass="card">
                 <Label text="Add New Course" style="-fx-text-fill: #667eea; -fx-font-size: 18px; -fx-font-weight: bold;"/>
-                
+
                 <GridPane hgap="15" vgap="15">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="18"/>
@@ -50,7 +50,7 @@
                     <ComboBox fx:id="cbGrade" promptText="Select grade" prefWidth="200" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
                 </GridPane>
             </VBox>
-            
+
             <HBox alignment="CENTER_RIGHT" spacing="10">
                 <Button text="➕ Add Course" fx:id="btnAdd" onAction="#onAddCourse" styleClass="primary-btn" prefWidth="160"/>
             </HBox>
@@ -64,7 +64,7 @@
                     <Label text="/" styleClass="welcome-text" style="-fx-font-size: 18px;"/>
                     <Label fx:id="lblTotalCredits" text="0.0" styleClass="highlight-label"/>
                 </HBox>
-                
+
                 <TableView fx:id="tableCourses" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn text="Course Name" fx:id="colName" minWidth="150"/>

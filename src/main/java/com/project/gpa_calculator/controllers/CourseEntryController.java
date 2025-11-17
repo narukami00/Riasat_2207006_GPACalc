@@ -61,6 +61,19 @@ public class CourseEntryController {
         tableCourses.setItems(courses);
         tableCourses.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        cbGrade.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("Select Grade");
+                } else {
+                    setText(item);
+                }
+            }
+        });
+
+
         addButtonToTable();
     }
 
@@ -164,7 +177,7 @@ public class CourseEntryController {
 //            }
 //        }
 
-        // STRICT: Do NOT allow exceeding total credits
+        // Do NOT allow exceeding total credits
         if (currentCredits + credit > totalCredits) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Credit Limit Exceeded");
@@ -192,6 +205,7 @@ public class CourseEntryController {
         tfTeacher1.clear();
         tfTeacher2.clear();
         cbGrade.getSelectionModel().clearSelection();
+        cbGrade.setValue(null);
 
         showAlert(Alert.AlertType.INFORMATION, "Success", "Course added successfully!");
     }

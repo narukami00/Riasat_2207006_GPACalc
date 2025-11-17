@@ -1,5 +1,11 @@
 package com.project.gpa_calculator.controllers;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
 import com.project.gpa_calculator.model.Course;
 import com.project.gpa_calculator.model.Grade;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,11 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.FileOutputStream;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +58,7 @@ public class ResultController {
         tableResult.setItems(items);
 
         lblTotalCredits.setText(String.format("%.1f", totalCredits));
-        lblGPA.setText(String.format("%.3f", gpa));
+        lblGPA.setText(String.format("%.2f", gpa));
     }
 
     @FXML
@@ -89,22 +92,13 @@ public class ResultController {
     }
     
     private void exportToPDF(File file) throws Exception {
-        com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(file);
-        com.itextpdf.kernel.pdf.PdfDocument pdf = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+        PdfWriter writer = new PdfWriter(file);
+        PdfDocument pdf = new PdfDocument(writer);
         com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf);
-        
-        // Set margins
+
         document.setMargins(50, 50, 50, 50);
-        
-        // Trophy icon
-        com.itextpdf.layout.element.Paragraph trophy = new com.itextpdf.layout.element.Paragraph("🏆")
-            .setFontSize(48)
-            .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
-            .setMarginBottom(10);
-        document.add(trophy);
-        
-        // Title with border
-        com.itextpdf.layout.element.Paragraph title = new com.itextpdf.layout.element.Paragraph("ACADEMIC ACHIEVEMENT CERTIFICATE")
+
+        Paragraph title = new Paragraph("ACADEMIC ACHIEVEMENT CERTIFICATE")
             .setFontSize(20)
             .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
@@ -113,15 +107,14 @@ public class ResultController {
             .setPadding(10);
         document.add(title);
         
-        com.itextpdf.layout.element.Paragraph subtitle = new com.itextpdf.layout.element.Paragraph("Grade Point Average Report")
+        Paragraph subtitle = new Paragraph("Grade Point Average Report")
             .setFontSize(14)
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(new com.itextpdf.kernel.colors.DeviceRgb(102, 126, 234))
             .setMarginBottom(5);
         document.add(subtitle);
-        
-        // Date
-        com.itextpdf.layout.element.Paragraph date = new com.itextpdf.layout.element.Paragraph(
+
+        Paragraph date = new Paragraph(
             "Generated: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy • hh:mm a")))
             .setFontSize(10)
             .setItalic()
@@ -129,15 +122,14 @@ public class ResultController {
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY)
             .setMarginBottom(20);
         document.add(date);
-        
-        // GPA Box
-        com.itextpdf.layout.element.Div gpaBox = new com.itextpdf.layout.element.Div()
+
+        Div gpaBox = new Div()
             .setBorder(new com.itextpdf.layout.borders.SolidBorder(new com.itextpdf.kernel.colors.DeviceRgb(102, 126, 234), 2))
             .setPadding(20)
             .setMarginBottom(25)
             .setBackgroundColor(new com.itextpdf.kernel.colors.DeviceRgb(245, 247, 255));
         
-        com.itextpdf.layout.element.Paragraph gpaLabel = new com.itextpdf.layout.element.Paragraph("CUMULATIVE GPA")
+        Paragraph gpaLabel = new Paragraph("CUMULATIVE GPA")
             .setFontSize(12)
             .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
@@ -145,21 +137,21 @@ public class ResultController {
             .setMarginBottom(5);
         gpaBox.add(gpaLabel);
         
-        com.itextpdf.layout.element.Paragraph gpaValue = new com.itextpdf.layout.element.Paragraph(String.format("%.3f", currentGPA))
+        Paragraph gpaValue = new Paragraph(String.format("%.2f", currentGPA))
             .setFontSize(42)
             .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.BLUE);
         gpaBox.add(gpaValue);
         
-        com.itextpdf.layout.element.Paragraph gpaOut = new com.itextpdf.layout.element.Paragraph("out of 4.00")
+        Paragraph gpaOut = new Paragraph("out of 4.00")
             .setFontSize(10)
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
             .setMarginBottom(10);
         gpaBox.add(gpaOut);
         
-        com.itextpdf.layout.element.Paragraph credits = new com.itextpdf.layout.element.Paragraph(
+        Paragraph credits = new Paragraph(
             "Total Credits: " + String.format("%.1f", currentTotalCredits) + " hours")
             .setFontSize(12)
             .setBold()
@@ -168,25 +160,22 @@ public class ResultController {
         gpaBox.add(credits);
         
         document.add(gpaBox);
-        
-        // Course breakdown title
-        com.itextpdf.layout.element.Paragraph tableTitle = new com.itextpdf.layout.element.Paragraph("📚  DETAILED COURSE BREAKDOWN")
+
+        Paragraph tableTitle = new Paragraph("📚  DETAILED COURSE BREAKDOWN")
             .setFontSize(14)
             .setBold()
             .setFontColor(com.itextpdf.kernel.colors.ColorConstants.BLUE)
             .setMarginBottom(10);
         document.add(tableTitle);
-        
-        // Create table
-        com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(new float[]{3, 1.5f, 1, 1, 1.2f})
+
+        Table table = new Table(new float[]{3, 1.5f, 1, 1, 1.2f})
             .useAllAvailableWidth();
-        
-        // Header row
+
         com.itextpdf.kernel.colors.Color headerBg = new com.itextpdf.kernel.colors.DeviceRgb(30, 58, 138);
         String[] headers = {"Course Name", "Code", "Credit", "Grade", "Points"};
         for (String header : headers) {
-            table.addHeaderCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(header)
+            table.addHeaderCell(new Cell()
+                .add(new Paragraph(header)
                     .setFontSize(11)
                     .setBold()
                     .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE))
@@ -194,39 +183,38 @@ public class ResultController {
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(8));
         }
-        
-        // Data rows with alternating colors
+
         boolean alternate = false;
         for (Course course : currentCourses) {
             com.itextpdf.kernel.colors.Color rowBg = alternate ? 
                 new com.itextpdf.kernel.colors.DeviceRgb(240, 244, 255) : 
                 com.itextpdf.kernel.colors.ColorConstants.WHITE;
             
-            table.addCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(course.getCourseName()).setFontSize(10))
+            table.addCell(new Cell()
+                .add(new Paragraph(course.getCourseName()).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setPadding(6));
             
-            table.addCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(course.getCourseCode()).setFontSize(10))
-                .setBackgroundColor(rowBg)
-                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
-                .setPadding(6));
-            
-            table.addCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(String.format("%.1f", course.getCredit())).setFontSize(10))
+            table.addCell(new Cell()
+                .add(new Paragraph(course.getCourseCode()).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
             
-            table.addCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(course.getGrade()).setFontSize(10))
+            table.addCell(new Cell()
+                .add(new Paragraph(String.format("%.1f", course.getCredit())).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
             
-            table.addCell(new com.itextpdf.layout.element.Cell()
-                .add(new com.itextpdf.layout.element.Paragraph(String.format("%.2f", Grade.toPoint(course.getGrade()))).setFontSize(10))
+            table.addCell(new Cell()
+                .add(new Paragraph(course.getGrade()).setFontSize(10))
+                .setBackgroundColor(rowBg)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setPadding(6));
+            
+            table.addCell(new Cell()
+                .add(new Paragraph(String.format("%.2f", Grade.toPoint(course.getGrade()))).setFontSize(10))
                 .setBackgroundColor(rowBg)
                 .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
                 .setPadding(6));
@@ -235,9 +223,8 @@ public class ResultController {
         }
         
         document.add(table);
-        
-        // Footer
-        com.itextpdf.layout.element.Paragraph footer = new com.itextpdf.layout.element.Paragraph("\n✓  Keep up the excellent work!")
+
+        Paragraph footer = new Paragraph("\n✓  Keep up the excellent work!")
             .setFontSize(11)
             .setBold()
             .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
@@ -245,7 +232,7 @@ public class ResultController {
             .setMarginTop(20);
         document.add(footer);
         
-        com.itextpdf.layout.element.Paragraph footerInfo = new com.itextpdf.layout.element.Paragraph(
+        Paragraph footerInfo = new Paragraph(
             "This document was automatically generated by GPA Calculator")
             .setFontSize(9)
             .setItalic()
