@@ -16,6 +16,9 @@ public class HomeController {
     private Button startBtn;
 
     @FXML
+    private Button historyBtn;
+
+    @FXML
     public void onStart(){
         TextInputDialog dialog = new TextInputDialog("15");
         dialog.setTitle("Total Credits");
@@ -50,6 +53,25 @@ public class HomeController {
                 alert.setContentText("Please enter a valid numeric credit value.");
                 alert.showAndWait();
             }
+        }
+    }
+
+    @FXML
+    public void onHistory(){
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/History.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = (Stage) historyBtn.getScene().getWindow();
+            Scene scene = new Scene(root, 1000, 750);
+            scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
+            stage.setScene(scene);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Navigation Error");
+            alert.setContentText("Could not open history page.");
+            alert.showAndWait();
         }
     }
 }

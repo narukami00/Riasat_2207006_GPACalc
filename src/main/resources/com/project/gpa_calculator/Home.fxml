@@ -27,8 +27,12 @@
                 <Label style="-fx-font-size: 16px; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-style: italic;" text="Quick • Easy • Accurate" />
             </VBox>
 
-            <Button fx:id="startBtn" onAction="#onStart" prefWidth="260" prefHeight="55" 
-                    styleClass="primary-btn" text="Get Started ➜" style="-fx-font-size: 18px;" />
+            <VBox alignment="CENTER" spacing="15">
+                <Button fx:id="startBtn" onAction="#onStart" prefWidth="260" prefHeight="55" 
+                        styleClass="primary-btn" text="Get Started ➜" style="-fx-font-size: 18px;" />
+                <Button fx:id="historyBtn" onAction="#onHistory" prefWidth="260" prefHeight="55" 
+                        styleClass="button" text="📜 View History" style="-fx-font-size: 16px;" />
+            </VBox>
         </VBox>
     </center>
 
