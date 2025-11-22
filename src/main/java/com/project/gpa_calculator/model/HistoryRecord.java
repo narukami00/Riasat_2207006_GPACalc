@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class HistoryRecord {
+    private long id;
     private LocalDateTime timestamp;
     private double totalCredits;
     private double cgpa;
@@ -16,6 +17,14 @@ public class HistoryRecord {
         this.totalCredits = totalCredits;
         this.cgpa = cgpa;
         this.courses = courses;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public LocalDateTime getTimestamp() {

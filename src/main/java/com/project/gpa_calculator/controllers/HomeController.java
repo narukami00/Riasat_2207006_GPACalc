@@ -37,7 +37,7 @@ public class HomeController {
                     controller.setTotalCredits(total);
 
                     Stage stage = (Stage)  startBtn.getScene().getWindow();
-                    Scene scene = new Scene(root, 1000, 750);
+                    Scene scene = new Scene(root, 1600, 750);
                     scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
                     stage.setScene(scene);
                 }catch(Exception ex){
@@ -63,7 +63,7 @@ public class HomeController {
             Parent root = fxmlLoader.load();
 
             Stage stage = (Stage) historyBtn.getScene().getWindow();
-            Scene scene = new Scene(root, 1000, 750);
+            Scene scene = new Scene(root, 1600, 750);
             scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
             stage.setScene(scene);
         }catch(Exception ex){

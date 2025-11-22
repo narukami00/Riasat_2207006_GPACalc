@@ -2,22 +2,26 @@ package com.project.gpa_calculator.controllers;
 
 import com.project.gpa_calculator.model.Course;
 import com.project.gpa_calculator.model.HistoryRecord;
+import com.project.gpa_calculator.service.DatabaseService;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class HistoryController {
     @FXML
@@ -50,12 +54,24 @@ public class HistoryController {
     @FXML
     private Button backBtn;
 
+    @FXML
+    private Button clearAllBtn;
+
+    @FXML
+    private Button updateBtn;
+
+    @FXML
+    private Button deleteBtn;
+
     private ObservableList<HistoryRecord> historyRecords;
+    private DatabaseService dbService;
+    private HistoryRecord selectedRecord;
 
     @FXML
     public void initialize() {
+        dbService = DatabaseService.getInstance();
         historyRecords = FXCollections.observableArrayList();
-        loadDummyData();
+        loadHistoryFromDatabase();
 
         historyListView.setCellFactory(param -> new ListCell<HistoryRecord>() {
             @Override
@@ -66,11 +82,19 @@ public class HistoryController {
                     setGraphic(null);
                 } else {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
-                    String displayText = String.format("📅 %s | 📚 Credits: %.1f | 🎯 CGPA: %.2f",
+                    
+                    Label textLabel = new Label(String.format("📅 %s | 📚 Credits: %.1f | ",
                             record.getTimestamp().format(formatter),
-                            record.getTotalCredits(),
-                            record.getCgpa());
-                    setText(displayText);
+                            record.getTotalCredits()));
+                    textLabel.setStyle("-fx-text-fill: #333333; -fx-font-size: 13px;");
+                    
+                    Label cgpaLabel = new Label(String.format("🎯 CGPA: %.2f", record.getCgpa()));
+                    cgpaLabel.setStyle("-fx-text-fill: #667eea; -fx-font-size: 14px; -fx-font-weight: bold;");
+                    
+                    HBox contentBox = new HBox(10, textLabel, cgpaLabel);
+                    contentBox.setAlignment(Pos.CENTER_LEFT);
+                    
+                    setGraphic(contentBox);
                 }
             }
         });
@@ -79,7 +103,14 @@ public class HistoryController {
 
         historyListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                selectedRecord = newValue;
                 displayCourseDetails(newValue);
+                updateBtn.setDisable(false);
+                deleteBtn.setDisable(false);
+            } else {
+                selectedRecord = null;
+                updateBtn.setDisable(true);
+                deleteBtn.setDisable(true);
             }
         });
 
@@ -93,45 +124,10 @@ public class HistoryController {
         detailsLabel.setText("Select a history record to view course details");
     }
 
-    private void loadDummyData() {
-        List<Course> courses1 = new ArrayList<>();
-        courses1.add(new Course("Data Structures", "CSE201", 3.0, "Dr. Smith", "Dr. Johnson", "A"));
-        courses1.add(new Course("Algorithms", "CSE202", 3.0, "Dr. Williams", "Dr. Brown", "A-"));
-        courses1.add(new Course("Database Systems", "CSE301", 3.0, "Dr. Davis", "Dr. Miller", "B+"));
-        courses1.add(new Course("Web Development", "CSE305", 3.0, "Dr. Wilson", "Dr. Moore", "A"));
-        courses1.add(new Course("Software Engineering", "CSE401", 3.0, "Dr. Taylor", "Dr. Anderson", "A-"));
-
-        List<Course> courses2 = new ArrayList<>();
-        courses2.add(new Course("Operating Systems", "CSE303", 3.0, "Dr. Thomas", "Dr. Jackson", "B+"));
-        courses2.add(new Course("Computer Networks", "CSE304", 3.0, "Dr. White", "Dr. Harris", "A"));
-        courses2.add(new Course("Machine Learning", "CSE402", 3.0, "Dr. Martin", "Dr. Thompson", "A"));
-        courses2.add(new Course("Artificial Intelligence", "CSE403", 3.0, "Dr. Garcia", "Dr. Martinez", "A-"));
-
-        List<Course> courses3 = new ArrayList<>();
-        courses3.add(new Course("Mobile App Development", "CSE306", 3.0, "Dr. Robinson", "Dr. Clark", "A"));
-        courses3.add(new Course("Cloud Computing", "CSE404", 3.0, "Dr. Rodriguez", "Dr. Lewis", "B+"));
-        courses3.add(new Course("Cybersecurity", "CSE405", 3.0, "Dr. Lee", "Dr. Walker", "A-"));
-
-        historyRecords.add(new HistoryRecord(
-                LocalDateTime.now().minusDays(15),
-                15.0,
-                3.75,
-                courses1
-        ));
-
-        historyRecords.add(new HistoryRecord(
-                LocalDateTime.now().minusDays(45),
-                12.0,
-                3.67,
-                courses2
-        ));
-
-        historyRecords.add(new HistoryRecord(
-                LocalDateTime.now().minusDays(90),
-                9.0,
-                3.83,
-                courses3
-        ));
+    private void loadHistoryFromDatabase() {
+        historyRecords.clear();
+        List<HistoryRecord> records = dbService.getAllHistoryRecords();
+        historyRecords.addAll(records);
     }
 
     private void displayCourseDetails(HistoryRecord record) {
@@ -146,13 +142,113 @@ public class HistoryController {
     }
 
     @FXML
+    public void onUpdate() {
+        if (selectedRecord == null) return;
+        
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/CourseEntry.fxml"));
+            Parent root = fxmlLoader.load();
+            CourseEntryController controller = fxmlLoader.getController();
+            controller.loadHistoryRecord(selectedRecord);
+
+            Stage stage = (Stage) historyListView.getScene().getWindow();
+            Scene scene = new Scene(root, 1600, 750);
+            scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Navigation Error");
+            alert.setContentText("Could not open course entry page.");
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void onDelete() {
+        if (selectedRecord == null) return;
+        
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Record");
+        confirm.setHeaderText("Are you sure you want to delete this record?");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
+        confirm.setContentText(String.format("Record from: %s\nCGPA: %.2f",
+                selectedRecord.getTimestamp().format(formatter),
+                selectedRecord.getCgpa()));
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean success = dbService.deleteHistoryRecord(selectedRecord.getId());
+            if (success) {
+                historyRecords.remove(selectedRecord);
+                courseTableView.getItems().clear();
+                detailsLabel.setText("Select a history record to view course details");
+                selectedRecord = null;
+                updateBtn.setDisable(true);
+                deleteBtn.setDisable(true);
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("Record deleted successfully!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to delete record");
+                alert.setContentText("An error occurred while deleting the record.");
+                alert.showAndWait();
+            }
+        }
+    }
+
+    @FXML
+    public void onClearAll() {
+        if (historyRecords.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("No Records");
+            alert.setHeaderText(null);
+            alert.setContentText("There are no history records to clear.");
+            alert.showAndWait();
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Clear All History");
+        confirm.setHeaderText("Are you sure you want to delete ALL history records?");
+        confirm.setContentText("This action cannot be undone. All " + historyRecords.size() + " records will be permanently deleted.");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean success = dbService.clearAllHistory();
+            if (success) {
+                historyRecords.clear();
+                courseTableView.getItems().clear();
+                detailsLabel.setText("Select a history record to view course details");
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("All history records have been cleared!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to clear history");
+                alert.setContentText("An error occurred while clearing the history.");
+                alert.showAndWait();
+            }
+        }
+    }
+
+    @FXML
     public void onBack() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/Home.fxml"));
             Parent root = fxmlLoader.load();
 
             Stage stage = (Stage) backBtn.getScene().getWindow();
-            Scene scene = new Scene(root, 1000, 750);
+            Scene scene = new Scene(root, 1600, 750);
             scene.getStylesheets().add(getClass().getResource("/com/project/gpa_calculator/css/styles.css").toExternalForm());
             stage.setScene(scene);
         } catch (Exception e) {

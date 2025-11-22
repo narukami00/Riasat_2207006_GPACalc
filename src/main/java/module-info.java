@@ -13,8 +13,12 @@ module com.project.gpa_calculator {
     requires kernel;
     requires layout;
     requires io;
+    requires com.google.gson;
+    requires java.sql;
 
     opens com.project.gpa_calculator to javafx.fxml;
     opens com.project.gpa_calculator.controllers to javafx.fxml;
+    opens com.project.gpa_calculator.model to com.google.gson, javafx.base;
     exports com.project.gpa_calculator;
+    exports com.project.gpa_calculator.model;
 }

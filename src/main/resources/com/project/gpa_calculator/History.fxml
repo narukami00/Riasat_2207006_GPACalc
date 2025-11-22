@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="750" prefWidth="1000" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HistoryController">
+<BorderPane prefHeight="750" prefWidth="1600" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HistoryController">
 
     <top>
         <VBox alignment="CENTER" spacing="10">
@@ -21,7 +21,7 @@
                 <Insets top="20" bottom="40" left="40" right="40" />
             </padding>
 
-            <!-- Left side: History list -->
+            <!-- Left History list -->
             <VBox spacing="15" HBox.hgrow="ALWAYS" styleClass="card" style="-fx-min-width: 420px; -fx-max-width: 420px;">
                 <padding>
                     <Insets top="20" bottom="20" left="20" right="20" />
@@ -34,7 +34,7 @@
                 </ListView>
             </VBox>
 
-            <!-- Right side: Course details -->
+            <!-- Right Course details -->
             <VBox spacing="15" HBox.hgrow="ALWAYS" styleClass="card">
                 <padding>
                     <Insets top="20" bottom="20" left="20" right="20" />
@@ -43,7 +43,11 @@
                 <Label text="📊 Course Details" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
                 <Separator />
                 
-                <Label fx:id="detailsLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #555555; -fx-font-style: italic;" />
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label fx:id="detailsLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #555555; -fx-font-style: italic;" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="updateBtn" onAction="#onUpdate" text="✏ Update" styleClass="edit-btn" style="-fx-font-size: 13px; -fx-padding: 8 20 8 20;" disable="true" />
+                    <Button fx:id="deleteBtn" onAction="#onDelete" text="🗑 Delete" styleClass="delete-btn" style="-fx-font-size: 13px; -fx-padding: 8 20 8 20;" disable="true" />
+                </HBox>
                 
                 <TableView fx:id="courseTableView" VBox.vgrow="ALWAYS">
                     <columns>
@@ -67,6 +71,7 @@
             <padding>
                 <Insets top="15" bottom="25" />
             </padding>
+            <Button fx:id="clearAllBtn" onAction="#onClearAll" text="🗑 Clear All History" styleClass="button" style="-fx-font-size: 14px; -fx-padding: 10 30 10 30;" />
             <Button fx:id="backBtn" onAction="#onBack" text="← Back to Home" styleClass="button" style="-fx-font-size: 14px; -fx-padding: 10 30 10 30;" />
         </HBox>
     </bottom>

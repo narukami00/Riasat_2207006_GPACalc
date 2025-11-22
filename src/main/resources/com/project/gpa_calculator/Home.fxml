@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="750" prefWidth="1000" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HomeController">
+<BorderPane prefHeight="750" prefWidth="1600" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.project.gpa_calculator.controllers.HomeController">
 
     <top>
         <VBox alignment="CENTER" spacing="10">

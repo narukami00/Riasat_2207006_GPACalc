@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import com.project.gpa_calculator.model.Course;
 import com.project.gpa_calculator.model.Grade;
+import com.project.gpa_calculator.model.HistoryRecord;
+import com.project.gpa_calculator.service.DatabaseService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,6 +21,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class CourseEntryController {
@@ -46,6 +50,7 @@ public class CourseEntryController {
     private ObservableList<Course> courses = FXCollections.observableArrayList();
     private double totalCredits = 0.0;
     private double currentCredits = 0.0;
+    private Long editingRecordId = null;
 
     @FXML
     public void initialize() {
@@ -139,6 +144,17 @@ public class CourseEntryController {
 
     public void setTotalCredits(double totalCredits) {
         this.totalCredits = totalCredits;
+        updateCreditLabels();
+    }
+
+    public void loadHistoryRecord(HistoryRecord record) {
+        this.editingRecordId = record.getId();
+        this.totalCredits = record.getTotalCredits();
+        this.courses.clear();
+        this.courses.addAll(record.getCourses());
+        this.currentCredits = record.getCourses().stream()
+                .mapToDouble(Course::getCredit)
+                .sum();
         updateCreditLabels();
     }
 
@@ -238,13 +254,32 @@ public class CourseEntryController {
         double gpa = totalWeighted / totalCredits;
 
         try {
+            DatabaseService dbService = DatabaseService.getInstance();
+            HistoryRecord record = new HistoryRecord(
+                    LocalDateTime.now(),
+                    totalCredits,
+                    gpa,
+                    new ArrayList<>(courses)
+            );
+
+            if (editingRecordId != null) {
+                record.setId(editingRecordId);
+                dbService.updateHistoryRecord(editingRecordId, record);
+                showAlert(Alert.AlertType.INFORMATION, "Success", "History record updated successfully!");
+            } else {
+                long id = dbService.saveHistoryRecord(record);
+                if (id > 0) {
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Calculation saved to history!");
+                }
+            }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/Result.fxml"));
             Parent root = loader.load();
             ResultController rc = loader.getController();
             rc.setData(courses, gpa, totalCredits);
 
             Stage stage = (Stage) btnCalculate.getScene().getWindow();
-            Scene scene = new Scene(root, 1000, 750);
+            Scene scene = new Scene(root, 1600, 750);
             URL css = getClass().getResource("/com/project/gpa_calculator/css/styles.css");
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
