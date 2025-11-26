@@ -1,5 +1,6 @@
 package com.project.gpa_calculator.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import com.project.gpa_calculator.model.Course;
 import com.project.gpa_calculator.model.Grade;
 import com.project.gpa_calculator.model.HistoryRecord;
 import com.project.gpa_calculator.service.DatabaseService;
+import com.project.gpa_calculator.service.GPACalculationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,6 +53,7 @@ public class CourseEntryController {
     private double totalCredits = 0.0;
     private double currentCredits = 0.0;
     private Long editingRecordId = null;
+    private final GPACalculationService gpaService = new GPACalculationService();
 
     @FXML
     public void initialize() {
@@ -246,48 +249,71 @@ public class CourseEntryController {
             return;
         }
 
-        double totalWeighted = 0.0;
-        for (Course c : courses) {
-            double gp = Grade.toPoint(c.getGrade());
-            totalWeighted += gp * c.getCredit();
-        }
-        double gpa = totalWeighted / totalCredits;
+        btnCalculate.setDisable(true);
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        progressIndicator.setMaxWidth(20);
+        progressIndicator.setMaxHeight(20);
+        btnCalculate.setGraphic(progressIndicator);
+        btnCalculate.setText("Calculating...");
 
-        try {
-            DatabaseService dbService = DatabaseService.getInstance();
-            HistoryRecord record = new HistoryRecord(
-                    LocalDateTime.now(),
-                    totalCredits,
-                    gpa,
-                    new ArrayList<>(courses)
-            );
+        gpaService.calculateGPAAsync(new ArrayList<>(courses), totalCredits).thenAccept(gpa -> {
+            Platform.runLater(() -> {
+                try {
+                    DatabaseService dbService = DatabaseService.getInstance();
+                    HistoryRecord record = new HistoryRecord(
+                            LocalDateTime.now(),
+                            totalCredits,
+                            gpa,
+                            new ArrayList<>(courses)
+                    );
 
-            if (editingRecordId != null) {
-                record.setId(editingRecordId);
-                dbService.updateHistoryRecord(editingRecordId, record);
-                showAlert(Alert.AlertType.INFORMATION, "Success", "History record updated successfully!");
-            } else {
-                long id = dbService.saveHistoryRecord(record);
-                if (id > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "Calculation saved to history!");
+                    if (editingRecordId != null) {
+                        record.setId(editingRecordId);
+                        dbService.updateHistoryRecordAsync(editingRecordId, record).thenRun(() -> {
+                            Platform.runLater(() -> {
+                                showAlert(Alert.AlertType.INFORMATION, "Success", "History record updated successfully!");
+                            });
+                        });
+                    } else {
+                        dbService.saveHistoryRecordAsync(record).thenAccept(id -> {
+                            Platform.runLater(() -> {
+                                if (id > 0) {
+                                    showAlert(Alert.AlertType.INFORMATION, "Success", "Calculation saved to history!");
+                                }
+                            });
+                        });
+                    }
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/Result.fxml"));
+                    Parent root = loader.load();
+                    ResultController rc = loader.getController();
+                    rc.setData(courses, gpa, totalCredits);
+
+                    Stage stage = (Stage) btnCalculate.getScene().getWindow();
+                    Scene scene = new Scene(root, 1600, 750);
+                    URL css = getClass().getResource("/com/project/gpa_calculator/css/styles.css");
+                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
+                    stage.setScene(scene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showAlert(Alert.AlertType.INFORMATION, "GPA Result", String.format("GPA: %.3f", gpa));
+                } finally {
+                    btnCalculate.setGraphic(null);
+                    btnCalculate.setText("Calculate GPA");
+                    btnCalculate.setDisable(false);
                 }
-            }
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/project/gpa_calculator/Result.fxml"));
-            Parent root = loader.load();
-            ResultController rc = loader.getController();
-            rc.setData(courses, gpa, totalCredits);
-
-            Stage stage = (Stage) btnCalculate.getScene().getWindow();
-            Scene scene = new Scene(root, 1600, 750);
-            URL css = getClass().getResource("/com/project/gpa_calculator/css/styles.css");
-            if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-            stage.setScene(scene);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.INFORMATION, "GPA Result", String.format("GPA: %.3f", gpa));
-        }
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                ex.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Calculation Error", "Failed to calculate GPA: " + ex.getMessage());
+                btnCalculate.setGraphic(null);
+                btnCalculate.setText("Calculate GPA");
+                btnCalculate.setDisable(false);
+            });
+            return null;
+        });
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {

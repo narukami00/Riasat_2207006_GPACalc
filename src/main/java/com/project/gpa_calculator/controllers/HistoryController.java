@@ -3,8 +3,7 @@ package com.project.gpa_calculator.controllers;
 import com.project.gpa_calculator.model.Course;
 import com.project.gpa_calculator.model.HistoryRecord;
 import com.project.gpa_calculator.service.DatabaseService;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,10 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class HistoryController {
@@ -126,8 +122,27 @@ public class HistoryController {
 
     private void loadHistoryFromDatabase() {
         historyRecords.clear();
-        List<HistoryRecord> records = dbService.getAllHistoryRecords();
-        historyRecords.addAll(records);
+        
+        ProgressIndicator loadingIndicator = new ProgressIndicator();
+        loadingIndicator.setMaxWidth(30);
+        loadingIndicator.setMaxHeight(30);
+        detailsLabel.setGraphic(loadingIndicator);
+        detailsLabel.setText("Loading history records...");
+        
+        dbService.getAllHistoryRecordsAsync().thenAccept(records -> {
+            Platform.runLater(() -> {
+                historyRecords.addAll(records);
+                detailsLabel.setGraphic(null);
+                detailsLabel.setText("Select a history record to view course details");
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                detailsLabel.setGraphic(null);
+                detailsLabel.setText("Error loading history records");
+                ex.printStackTrace();
+            });
+            return null;
+        });
     }
 
     private void displayCourseDetails(HistoryRecord record) {
@@ -178,27 +193,33 @@ public class HistoryController {
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            boolean success = dbService.deleteHistoryRecord(selectedRecord.getId());
-            if (success) {
-                historyRecords.remove(selectedRecord);
-                courseTableView.getItems().clear();
-                detailsLabel.setText("Select a history record to view course details");
-                selectedRecord = null;
-                updateBtn.setDisable(true);
-                deleteBtn.setDisable(true);
-                
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("Record deleted successfully!");
-                alert.showAndWait();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Failed to delete record");
-                alert.setContentText("An error occurred while deleting the record.");
-                alert.showAndWait();
-            }
+            long recordId = selectedRecord.getId();
+            HistoryRecord recordToRemove = selectedRecord;
+            
+            dbService.deleteHistoryRecordAsync(recordId).thenAccept(success -> {
+                Platform.runLater(() -> {
+                    if (success) {
+                        historyRecords.remove(recordToRemove);
+                        courseTableView.getItems().clear();
+                        detailsLabel.setText("Select a history record to view course details");
+                        selectedRecord = null;
+                        updateBtn.setDisable(true);
+                        deleteBtn.setDisable(true);
+                        
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Record deleted successfully!");
+                        alert.showAndWait();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Failed to delete record");
+                        alert.setContentText("An error occurred while deleting the record.");
+                        alert.showAndWait();
+                    }
+                });
+            });
         }
     }
 
@@ -220,24 +241,27 @@ public class HistoryController {
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            boolean success = dbService.clearAllHistory();
-            if (success) {
-                historyRecords.clear();
-                courseTableView.getItems().clear();
-                detailsLabel.setText("Select a history record to view course details");
-                
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("All history records have been cleared!");
-                alert.showAndWait();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Failed to clear history");
-                alert.setContentText("An error occurred while clearing the history.");
-                alert.showAndWait();
-            }
+            dbService.clearAllHistoryAsync().thenAccept(success -> {
+                Platform.runLater(() -> {
+                    if (success) {
+                        historyRecords.clear();
+                        courseTableView.getItems().clear();
+                        detailsLabel.setText("Select a history record to view course details");
+                        
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success");
+                        alert.setHeaderText(null);
+                        alert.setContentText("All history records have been cleared!");
+                        alert.showAndWait();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Failed to clear history");
+                        alert.setContentText("An error occurred while clearing the history.");
+                        alert.showAndWait();
+                    }
+                });
+            });
         }
     }
 

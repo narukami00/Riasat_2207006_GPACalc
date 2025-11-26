@@ -10,17 +10,35 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseService {
     private static final String DB_URL = "jdbc:sqlite:gpa_history.db";
     private static final Gson gson = new Gson();
     private static DatabaseService instance;
+    private final ExecutorService executorService;
+    private final ReadWriteLock lock;
 
     private DatabaseService() {
+        this.executorService = Executors.newFixedThreadPool(
+            Runtime.getRuntime().availableProcessors(),
+            new ThreadFactory() {
+                private int counter = 0;
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread(r, "DB-Worker-" + counter++);
+                    thread.setDaemon(true);
+                    return thread;
+                }
+            }
+        );
+        this.lock = new ReentrantReadWriteLock();
         initializeDatabase();
     }
 
-    public static DatabaseService getInstance() {
+    public static synchronized DatabaseService getInstance() {
         if (instance == null) {
             instance = new DatabaseService();
         }
@@ -48,58 +66,76 @@ public class DatabaseService {
     }
 
     public long saveHistoryRecord(HistoryRecord record) {
-        String sql = "INSERT INTO history_records (timestamp, total_credits, cgpa, courses_json) VALUES (?, ?, ?, ?)";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        lock.writeLock().lock();
+        try {
+            String sql = "INSERT INTO history_records (timestamp, total_credits, cgpa, courses_json) VALUES (?, ?, ?, ?)";
             
-            pstmt.setString(1, record.getTimestamp().toString());
-            pstmt.setDouble(2, record.getTotalCredits());
-            pstmt.setDouble(3, record.getCgpa());
-            pstmt.setString(4, gson.toJson(record.getCourses()));
-            
-            pstmt.executeUpdate();
-            
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);
+            try (Connection conn = DriverManager.getConnection(DB_URL);
+                 PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                
+                pstmt.setString(1, record.getTimestamp().toString());
+                pstmt.setDouble(2, record.getTotalCredits());
+                pstmt.setDouble(3, record.getCgpa());
+                pstmt.setString(4, gson.toJson(record.getCourses()));
+                
+                pstmt.executeUpdate();
+                
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getLong(1);
+                    }
                 }
+                return -1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to save history record", e);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save history record", e);
+        } finally {
+            lock.writeLock().unlock();
         }
-        return -1;
+    }
+
+    public CompletableFuture<Long> saveHistoryRecordAsync(HistoryRecord record) {
+        return CompletableFuture.supplyAsync(() -> saveHistoryRecord(record), executorService);
     }
 
     public List<HistoryRecord> getAllHistoryRecords() {
-        List<HistoryRecord> records = new ArrayList<>();
-        String sql = "SELECT * FROM history_records ORDER BY timestamp DESC";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        lock.readLock().lock();
+        try {
+            List<HistoryRecord> records = new ArrayList<>();
+            String sql = "SELECT * FROM history_records ORDER BY timestamp DESC";
             
-            Type courseListType = new TypeToken<List<Course>>(){}.getType();
-            
-            while (rs.next()) {
-                HistoryRecord record = new HistoryRecord();
-                record.setId(rs.getLong("id"));
-                record.setTimestamp(LocalDateTime.parse(rs.getString("timestamp")));
-                record.setTotalCredits(rs.getDouble("total_credits"));
-                record.setCgpa(rs.getDouble("cgpa"));
+            try (Connection conn = DriverManager.getConnection(DB_URL);
+                 Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
                 
-                String coursesJson = rs.getString("courses_json");
-                List<Course> courses = gson.fromJson(coursesJson, courseListType);
-                record.setCourses(courses);
+                Type courseListType = new TypeToken<List<Course>>(){}.getType();
                 
-                records.add(record);
+                while (rs.next()) {
+                    HistoryRecord record = new HistoryRecord();
+                    record.setId(rs.getLong("id"));
+                    record.setTimestamp(LocalDateTime.parse(rs.getString("timestamp")));
+                    record.setTotalCredits(rs.getDouble("total_credits"));
+                    record.setCgpa(rs.getDouble("cgpa"));
+                    
+                    String coursesJson = rs.getString("courses_json");
+                    List<Course> courses = gson.fromJson(coursesJson, courseListType);
+                    record.setCourses(courses);
+                    
+                    records.add(record);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            
+            return records;
+        } finally {
+            lock.readLock().unlock();
         }
-        
-        return records;
+    }
+
+    public CompletableFuture<List<HistoryRecord>> getAllHistoryRecordsAsync() {
+        return CompletableFuture.supplyAsync(this::getAllHistoryRecords, executorService);
     }
 
     public HistoryRecord getHistoryRecordById(long id) {
@@ -135,50 +171,89 @@ public class DatabaseService {
     }
 
     public boolean updateHistoryRecord(long id, HistoryRecord record) {
-        String sql = "UPDATE history_records SET timestamp = ?, total_credits = ?, cgpa = ?, courses_json = ? WHERE id = ?";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        lock.writeLock().lock();
+        try {
+            String sql = "UPDATE history_records SET timestamp = ?, total_credits = ?, cgpa = ?, courses_json = ? WHERE id = ?";
             
-            pstmt.setString(1, record.getTimestamp().toString());
-            pstmt.setDouble(2, record.getTotalCredits());
-            pstmt.setDouble(3, record.getCgpa());
-            pstmt.setString(4, gson.toJson(record.getCourses()));
-            pstmt.setLong(5, id);
-            
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            try (Connection conn = DriverManager.getConnection(DB_URL);
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                
+                pstmt.setString(1, record.getTimestamp().toString());
+                pstmt.setDouble(2, record.getTotalCredits());
+                pstmt.setDouble(3, record.getCgpa());
+                pstmt.setString(4, gson.toJson(record.getCourses()));
+                pstmt.setLong(5, id);
+                
+                int affectedRows = pstmt.executeUpdate();
+                return affectedRows > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
+    }
+
+    public CompletableFuture<Boolean> updateHistoryRecordAsync(long id, HistoryRecord record) {
+        return CompletableFuture.supplyAsync(() -> updateHistoryRecord(id, record), executorService);
     }
 
     public boolean deleteHistoryRecord(long id) {
-        String sql = "DELETE FROM history_records WHERE id = ?";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        lock.writeLock().lock();
+        try {
+            String sql = "DELETE FROM history_records WHERE id = ?";
             
-            pstmt.setLong(1, id);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            try (Connection conn = DriverManager.getConnection(DB_URL);
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                
+                pstmt.setLong(1, id);
+                int affectedRows = pstmt.executeUpdate();
+                return affectedRows > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
+    public CompletableFuture<Boolean> deleteHistoryRecordAsync(long id) {
+        return CompletableFuture.supplyAsync(() -> deleteHistoryRecord(id), executorService);
+    }
+
     public boolean clearAllHistory() {
-        String sql = "DELETE FROM history_records";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        lock.writeLock().lock();
+        try {
+            String sql = "DELETE FROM history_records";
+            
+            try (Connection conn = DriverManager.getConnection(DB_URL);
+                 Statement stmt = conn.createStatement()) {
+                stmt.execute(sql);
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public CompletableFuture<Boolean> clearAllHistoryAsync() {
+        return CompletableFuture.supplyAsync(this::clearAllHistory, executorService);
+    }
+
+    public void shutdown() {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 }

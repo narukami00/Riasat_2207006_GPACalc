@@ -1,5 +1,6 @@
 package com.project.gpa_calculator;
 
+import com.project.gpa_calculator.service.DatabaseService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,7 +18,18 @@ public class MainApp extends Application {
         stage.setMinWidth(1440);
         stage.setMinHeight(700);
         stage.setScene(scene);
+        
+        stage.setOnCloseRequest(event -> {
+            DatabaseService.getInstance().shutdown();
+        });
+        
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        DatabaseService.getInstance().shutdown();
+        super.stop();
     }
 
     public static void main(String[] args) {
